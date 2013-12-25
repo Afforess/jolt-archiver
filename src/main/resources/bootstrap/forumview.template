@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../../docs-assets/ico/favicon.ico">
+
+		<title>Jolt Forum Archive - %FORUM_NAME%</title>
+
+		<link href="css/bootstrap.css" rel="stylesheet">
+
+		<link href="grid.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header">
+				<h1>%FORUM_NAME%</h1>
+				<p class="lead">%FORUM_DESCRIPTION%</p>
+			</div>
+			<h3>Thread List</h3>
+			<!--Template Start-->
+			<div class="row">
+				<div class="col-md-12">
+					<p><strong>%THREAD_TITLE%</strong><span style='float:right;'>Replies: %REPLY_COUNT%</span>
+					<p style='font-size:11px;'>by %THREAD_OWNER% - %POSTED_DATE%<span style='float:right;'>Last reply by: %LAST_REPLY_USER%</span></p>
+				</div>
+			</div>
+			<!--Template End-->
+		</div>
+	</body>
+</html>
