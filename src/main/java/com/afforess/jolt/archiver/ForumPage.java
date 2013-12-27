@@ -1,12 +1,15 @@
 package com.afforess.jolt.archiver;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.dbutils.DbUtils;
 
 public class ForumPage extends Template{
 	private final int id;
@@ -21,18 +24,18 @@ public class ForumPage extends Template{
 		this.forumName = forumName;
 		this.forumDescription = forumDescription;
 	}
-	
+
 	public int getThreadCount() {
 		return threadCount;
 	}
 
 	public String getFormattedForumName() {
-		return forumName.toLowerCase().replaceAll("\\&|\\(.*\\)|\\?|amp;", "").replaceAll(" ", "-");
+		return forumName.toLowerCase().replaceAll("\\&|\\(.*\\)|\\?|amp;", "").replaceAll(" +", "-");
 	}
 
 	@Override
-	protected File getOutputFile(File dir) {
-		return new File(dir, getFormattedForumName() + ".html");
+	protected File getOutputFile(File dir, int page) {
+		return new File(new File(dir, getFormattedForumName()), page == 0 ? "index.html" : "page-" + page + ".html");
 	}
 
 	@Override
@@ -41,29 +44,51 @@ public class ForumPage extends Template{
 	}
 
 	@Override
-	protected void generateTemplate(String templateHtml, StringBuilder finalHtml) throws SQLException {
+	protected void generatePageTemplate(String templateHtml, StringBuilder finalHtml, int page) throws SQLException {
 		System.out.println("Generating Forum Content for [ " + forumName + " ]");
-		threadCount = 0;
-		int start = finalHtml.indexOf("%FORUM_NAME%");
-		finalHtml.replace(start, start + "%FORUM_NAME%".length(), forumName);
-		start = finalHtml.indexOf("%FORUM_NAME%");
-		finalHtml.replace(start, start + "%FORUM_NAME%".length(), forumName);
-		start = finalHtml.indexOf("%FORUM_DESCRIPTION%");
-		finalHtml.replace(start, start + "%FORUM_DESCRIPTION%".length(), forumDescription);
-		
 		Connection conn = getConnection();
-		PreparedStatement forums = conn.prepareStatement("SELECT threadid, title, lastpost, replycount, postusername, postuserid, lastposter, dateline FROM jolt.thread WHERE forumid = ?");
-		forums.setInt(1, id);
-		ResultSet result = forums.executeQuery();
-		while(result.next()) {
-			threadCount++;
-			System.out.println("Found Thread Topic: " + result.getString(2));
-			Date postTime = new Date(result.getLong(8) * 1000L);
-			String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
-			finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", result.getString(2)).replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
-										.replaceAll("%THREAD_OWNER%", result.getString(5)).replaceAll("%POSTED_DATE%", time)
-										.replaceAll("%LAST_REPLY_USER%", result.getString(7)));
+		ResultSet result = null;
+		PreparedStatement forums = null;
+		try {
+			forums = conn.prepareStatement("SELECT threadid, title, lastpost, replycount, postusername, postuserid, lastposter, dateline FROM thread WHERE forumid = ? ORDER BY dateline DESC LIMIT ?, ?");
+			forums.setInt(1, id);
+			forums.setInt(2, page * ITEMS_PER_PAGE);
+			forums.setInt(3, ITEMS_PER_PAGE);
+			result = forums.executeQuery();
+			while(result.next()) {
+				threadCount++;
+				System.out.println("Found Thread Topic: " + result.getString(2));
+				Date postTime = new Date(result.getLong(8) * 1000L);
+				String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
+				finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", result.getString(2)).replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
+											.replaceAll("%THREAD_OWNER%", result.getString(5)).replaceAll("%POSTED_DATE%", time)
+											.replaceAll("%LAST_REPLY_USER%", result.getString(7)));
+			}
+		} finally {
+			DbUtils.closeQuietly(result);
+			DbUtils.closeQuietly(forums);
 		}
 	}
 
+	@Override
+	protected int getNumPages() throws SQLException {
+		Connection conn = getConnection();
+		ResultSet result = null;
+		PreparedStatement forums = null;
+		try {
+			forums = conn.prepareStatement("SELECT count(*) FROM thread WHERE forumid = ?");
+			forums.setInt(1, id);
+			result = forums.executeQuery();
+			result.next();
+			return result.getInt(1) / ITEMS_PER_PAGE + 1;
+		} finally {
+			DbUtils.closeQuietly(result);
+			DbUtils.closeQuietly(forums);
+		}
+	}
+
+	@Override
+	protected String generateBaseTemplate(String templateHtml) throws IOException, SQLException {
+		return super.generateBaseTemplate(templateHtml.replaceAll("%FORUM_NAME%", forumName).replaceAll("%FORUM_DESCRIPTION%", forumDescription));
+	}
 }

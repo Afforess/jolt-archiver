@@ -6,13 +6,14 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<link rel="shortcut icon" href="../../docs-assets/ico/favicon.ico">
 
 		<title>Jolt Forum Archive - %FORUM_NAME%</title>
 
-		<link href="css/bootstrap.css" rel="stylesheet">
-
-		<link href="grid.css" rel="stylesheet">
+		<link href="../css/bootstrap.css" rel="stylesheet">
+		<link href="../grid.css" rel="stylesheet">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/bootstrap.min.js"></script>
+		<script src="../js/bootstrap-paginator.min.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -29,6 +30,7 @@
 				</div>
 			</div>
 			<!--Template End-->
+			<ul class='pagination' id='pagination'>%PAGINATION%</ul>
 		</div>
 	</body>
 </html>

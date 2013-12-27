@@ -13,7 +13,7 @@ public class HomePage extends Template{
 	}
 
 	@Override
-	protected File getOutputFile(File dir) {
+	protected File getOutputFile(File dir, int page) {
 		return new File(dir, "index.html");
 	}
 
@@ -23,7 +23,7 @@ public class HomePage extends Template{
 	}
 
 	@Override
-	protected void generateTemplate(String templateHtml, StringBuilder finalHtml) throws SQLException, IOException {
+	protected void generatePageTemplate(String templateHtml, StringBuilder finalHtml, int page) throws SQLException, IOException {
 		System.out.println("Generating HomePage Content");
 		Connection conn = getConnection();
 		PreparedStatement forums = conn.prepareStatement("SELECT title, description, replycount, lastpost, lastpostid, lastposter, threadcount, lastthread, lastthreadid, forumid FROM forum");
@@ -33,11 +33,19 @@ public class HomePage extends Template{
 			ForumPage forum = new ForumPage(conn, result.getInt(10), result.getString(1), result.getString(2));
 			forum.generate();
 
-			finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", "<a href=\"" + forum.getFormattedForumName() + ".html\">" + result.getString(1) + "</a>")
+			finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", "<a href=\"" + forum.getFormattedForumName() + "/index.html\">" + result.getString(1) + "</a>")
 					.replaceAll("%FORUM_DESCRIPTION%", result.getString(2)).replaceAll("%THREAD_COUNT%", String.valueOf(forum.getThreadCount())));
-			
 		}
 		System.out.println("Finished Generating HomePage Content");
 	}
 
+	@Override
+	protected int getNumPages() {
+		return 1;
+	}
+
+	@Override
+	protected String generateBaseTemplate(String templateHtml) throws IOException, SQLException {
+		return templateHtml;
+	}
 }
