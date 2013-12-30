@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>Jolt Forum Archive - %THREAD_NAME%</title>
+
+		<link href="../../css/bootstrap.css" rel="stylesheet">
+		<link href="../../grid.css" rel="stylesheet">
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootstrap-paginator.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header">
+				<h1>%THREAD_NAME%</h1>
+				<p class="breadcrumb-banner"><span class="breadcrumb-parent"><a class="breadcrumb" href="../../index.html"><span class="breadcrumb-text">Home</span></a><span class="arrow"><span></span></span></span>%FORUM_NAME%</p>
+			</div>
+			<ul class='pagination' id='pagination'>%PAGINATION%</ul>
+			<!--Template Start-->
+			<div class="row">
+				<div class="col-md-12">
+					<p style='font-size:11px;'><strong>%POST_USERNAME%</strong> (%POST_TIME%)</p>
+					<p>%POST_CONTENT%</p>
+				</div>
+			</div>
+			<!--Template End-->
+			<ul class='pagination' id='pagination'>%PAGINATION%</ul>
+		</div>
+	</body>
+</html>

@@ -14,10 +14,13 @@ public abstract class Template {
 	private static final String TEMPLATE_END = "<!--Template End-->";
 	private static final String TEMPLATE_START = "<!--Template Start-->";
 	public static final File TEMPLATE_DIR = new File("./templates/bootstrap/");
-	public static final int ITEMS_PER_PAGE = 40;
+	public static final int ITEMS_PER_PAGE = 20;
 	private final Connection conn;
-	public Template(Connection conn) {
+	private final File baseDir;
+	public Template(Connection conn, File baseDir) {
 		this.conn = conn;
+		this.baseDir = baseDir;
+		baseDir.mkdirs();
 	}
 
 	public final Connection getConnection() {
@@ -33,7 +36,7 @@ public abstract class Template {
 		if (pages <= 1) {
 			return templateHtml.replaceAll("%PAGINATION%", "");
 		} else {
-			return templateHtml.replaceAll("%PAGINATION%", Matcher.quoteReplacement("<script type='text/javascript'>var options = {bootstrapMajorVersion: 3, currentPage: %CURRENT_PAGE%, totalPages: " + pages + ", pageUrl: function(type, page, current) { return (page == 1 ? \"index.html\" : \"page-\" + (page - 1) + \".html\"); }}; $('#pagination').bootstrapPaginator(options);</script>"));
+			return templateHtml.replaceAll("%PAGINATION%", Matcher.quoteReplacement("<script type='text/javascript'>var options = {bootstrapMajorVersion: 3, currentPage: %CURRENT_PAGE%, totalPages: " + pages + ", shouldShowPage: function(type, page, current){ if (type == 'first' || type == 'last') return false; return true;}, pageUrl: function(type, page, current) { return (page == 1 ? \"index.html\" : \"page-\" + (page - 1) + \".html\"); }}; $('#pagination').bootstrapPaginator(options);</script>"));
 		}
 	}
 
@@ -58,7 +61,7 @@ public abstract class Template {
 				try {
 					StringBuilder builder = new StringBuilder(html.substring(0, templateStart));
 
-					File output = getOutputFile(TEMPLATE_DIR, i);
+					File output = getOutputFile(baseDir, i);
 					output.getParentFile().mkdirs();
 					generatePageTemplate(templateHtml, builder, i);
 	

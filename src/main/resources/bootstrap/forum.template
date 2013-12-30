@@ -9,11 +9,11 @@
 
 		<title>Jolt Forum Archive - %FORUM_NAME%</title>
 
-		<link href="../css/bootstrap.css" rel="stylesheet">
-		<link href="../grid.css" rel="stylesheet">
-		<script src="../js/jquery.min.js"></script>
-		<script src="../js/bootstrap.min.js"></script>
-		<script src="../js/bootstrap-paginator.min.js"></script>
+		<link href="../../css/bootstrap.css" rel="stylesheet">
+		<link href="../../grid.css" rel="stylesheet">
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootstrap-paginator.min.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -21,7 +21,7 @@
 				<h1>%FORUM_NAME%</h1>
 				<p class="lead">%FORUM_DESCRIPTION%</p>
 			</div>
-			<h3>Thread List</h3>
+			<ul class='pagination' id='pagination'>%PAGINATION%</ul>
 			<!--Template Start-->
 			<div class="row">
 				<div class="col-md-12">

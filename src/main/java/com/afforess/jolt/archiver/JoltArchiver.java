@@ -14,11 +14,11 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.io.IOUtils;
 
 public class JoltArchiver {
-	
+	public static boolean VERBOSE = false;
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 		createTemplates();
 		if (args.length != 5) {
-			System.err.println("Missing arguments. Must be (5) arguments: (hostname) (port) (schema) (username) (password).");
+			System.err.println("Missing arguments. Must be (5) arguments: (hostname) (port) (schema) (username) (password) [-verbose].");
 			return;
 		}
 		final String hostname = args[0];
@@ -26,6 +26,7 @@ public class JoltArchiver {
 		final String schema = args[2];
 		final String username = args[3];
 		final String password = args[4];
+		VERBOSE = args.length > 5 && (args[5].equals("-v") || args[5].equals("-verbose"));
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + schema + "?user=" + username + "&password=" + password);
 		conn.setSchema(schema);
