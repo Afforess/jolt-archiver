@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.dbutils.DbUtils;
 
+import static java.util.regex.Matcher.quoteReplacement;
+
 public class ThreadPage extends Template{
 	private final int id;
 	private final String threadName;
@@ -56,14 +58,15 @@ public class ThreadPage extends Template{
 			while(result.next()) {
 				Date postTime = new Date(result.getLong(3) * 1000L);
 				String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
-				finalHtml.append(templateHtml.replaceAll("%POST_USERNAME%", String.valueOf(result.getString(2))).replaceAll("%POST_TIME%", time).replaceAll("%POST_CONTENT%", parseBBCode(result.getString(4))));
+				final String postContent = parseBBCode(result.getString(4));
+				finalHtml.append(templateHtml.replaceAll("%POST_USERNAME%", quoteReplacement(String.valueOf(result.getString(2)))).replaceAll("%POST_TIME%", quoteReplacement(time)).replaceAll("%POST_CONTENT%", quoteReplacement(postContent)));
 			}
 		} finally {
 			DbUtils.closeQuietly(result);
 			DbUtils.closeQuietly(forums);
 		}
 	}
-	
+
 	private static final Map<Pattern, String> bbcodeMap = new HashMap<Pattern, String>();
 	static {
 		bbcodeMap.put(Pattern.compile("\\[(b|B)\\](.+?)\\[/(b|B)\\]"), "<strong>$2</strong>");

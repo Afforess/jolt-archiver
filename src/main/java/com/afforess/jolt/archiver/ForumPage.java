@@ -1,5 +1,7 @@
 package com.afforess.jolt.archiver;
 
+import static java.util.regex.Matcher.quoteReplacement;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -66,9 +68,9 @@ public class ForumPage extends Template{
 				
 				Date postTime = new Date(result.getLong(8) * 1000L);
 				String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
-				finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", "<a href=\"../../threads/" + posts.getFormattedThreadName() + "/index.html\">" + result.getString(2) + "</a>").replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
-											.replaceAll("%THREAD_OWNER%", result.getString(5)).replaceAll("%POSTED_DATE%", time)
-											.replaceAll("%LAST_REPLY_USER%", result.getString(7)));
+				finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", quoteReplacement("<a href=\"../../threads/" + posts.getFormattedThreadName() + "/index.html\">" + result.getString(2) + "</a>")).replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
+											.replaceAll("%THREAD_OWNER%", quoteReplacement(result.getString(5))).replaceAll("%POSTED_DATE%", quoteReplacement(time))
+											.replaceAll("%LAST_REPLY_USER%", quoteReplacement(result.getString(7))));
 			}
 		} finally {
 			DbUtils.closeQuietly(result);

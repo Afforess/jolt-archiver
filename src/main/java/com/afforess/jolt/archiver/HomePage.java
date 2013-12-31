@@ -1,5 +1,7 @@
 package com.afforess.jolt.archiver;
 
+import static java.util.regex.Matcher.quoteReplacement;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,8 +37,8 @@ public class HomePage extends Template {
 			ForumPage forum = new ForumPage(conn, new File(TEMPLATE_DIR, "forums"), result.getInt(10), result.getString(1), result.getString(2));
 			forum.generate();
 
-			finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", "<a href=\"forums/" + forum.getFormattedForumName() + "/index.html\">" + result.getString(1) + "</a>")
-					.replaceAll("%FORUM_DESCRIPTION%", result.getString(2)).replaceAll("%THREAD_COUNT%", String.valueOf(forum.getThreadCount())));
+			finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", quoteReplacement("<a href=\"forums/" + forum.getFormattedForumName() + "/index.html\">" + result.getString(1) + "</a>"))
+					.replaceAll("%FORUM_DESCRIPTION%", quoteReplacement(result.getString(2))).replaceAll("%THREAD_COUNT%", quoteReplacement(String.valueOf(forum.getThreadCount()))));
 		}
 		if (JoltArchiver.VERBOSE) System.out.println("Finished Generating HomePage Content");
 	}
