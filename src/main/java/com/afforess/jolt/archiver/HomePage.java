@@ -32,13 +32,15 @@ public class HomePage extends Template {
 		ResultSet result = forums.executeQuery();
 		while(result.next()) {
 			if (JoltArchiver.VERBOSE) {
-				System.out.println("Found Forum Topic: " + result.getString(1));
+				System.out.println("Found Forum: " + result.getString(1));
 			}
-			ForumPage forum = new ForumPage(conn, new File(TEMPLATE_DIR, "forums"), result.getInt(10), result.getString(1), result.getString(2));
-			forum.generate();
-
-			finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", quoteReplacement("<a href=\"forums/" + forum.getFormattedForumName() + "/index.html\">" + result.getString(1) + "</a>"))
-					.replaceAll("%FORUM_DESCRIPTION%", quoteReplacement(result.getString(2))).replaceAll("%THREAD_COUNT%", quoteReplacement(String.valueOf(forum.getThreadCount()))));
+			if (result.getInt(3) > 0) {
+				ForumPage forum = new ForumPage(conn, new File(TEMPLATE_DIR, "forums"), result.getInt(10), result.getString(1), result.getString(2));
+				forum.generate();
+	
+				finalHtml.append(templateHtml.replaceAll("%FORUM_TITLE%", quoteReplacement("<a href=\"forums/" + forum.getFormattedForumName() + "/index.html\">" + result.getString(1) + "</a>"))
+						.replaceAll("%FORUM_DESCRIPTION%", quoteReplacement(result.getString(2))).replaceAll("%THREAD_COUNT%", quoteReplacement(String.valueOf(forum.getThreadCount()))));
+			}
 		}
 		if (JoltArchiver.VERBOSE) System.out.println("Finished Generating HomePage Content");
 	}

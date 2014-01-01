@@ -30,7 +30,7 @@ public class ThreadPage extends Template{
 	}
 
 	public String getFormattedThreadName() {
-		return threadName.toLowerCase().replaceAll("\\&|\\(.*\\)|\\?|amp;|quot;|:|\\.|,|!|\\[|\\]", "").replaceAll(" +", "-");
+		return id + "_" + threadName.toLowerCase().replaceAll("\\&|\\(.*\\)|\\?|amp;|quot;|:|\\.|,|!|\\[|\\]", "").replaceAll(" +", "-");
 	}
 
 	@Override
@@ -69,25 +69,39 @@ public class ThreadPage extends Template{
 
 	private static final Map<Pattern, String> bbcodeMap = new HashMap<Pattern, String>();
 	static {
-		bbcodeMap.put(Pattern.compile("\\[(b|B)\\](.+?)\\[/(b|B)\\]"), "<strong>$2</strong>");
-		bbcodeMap.put(Pattern.compile("\\[(i|I)\\](.+?)\\[/(i|I)\\]"), "<span class='italic'>$2</span>");
-		bbcodeMap.put(Pattern.compile("\\[(u|U)\\](.+?)\\[/(u|U)\\]"), "<span class='underline'>$2</span>");
+		bbcodeMap.put(Pattern.compile("\n\n"), "<br/>");
+		bbcodeMap.put(Pattern.compile("\\[(b|B)\\]"), "<strong>");
+		bbcodeMap.put(Pattern.compile("\\[/(b|B)\\]"), "</strong>");
+		bbcodeMap.put(Pattern.compile("\\[(i|I)\\]"), "<span class='italic'>");
+		bbcodeMap.put(Pattern.compile("\\[/(i|I)\\]"), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[(u|U)\\]"), "<span class='underline'>");
+		bbcodeMap.put(Pattern.compile("\\[/(u|U)\\]"), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[(list|LIST)\\]"), "<ul style=\"list-style-type: disc;\">");
+		bbcodeMap.put(Pattern.compile("\\[/(list|LIST)\\]"), "</ul>");
+		bbcodeMap.put(Pattern.compile("\\[(list|LIST)=[0-9]\\]"), "<ul style=\"list-style-type: decimal;\">");
+		bbcodeMap.put(Pattern.compile("\\[\\*\\]"), "</li><li>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)1\\](.+?)\\[/(h|H)1\\]"), "<h1>$2</h1>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)2\\](.+?)\\[/(h|H)2\\]"), "<h2>$2</h2>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)3\\](.+?)\\[/(h|H)3\\]"), "<h3>$2</h3>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)4\\](.+?)\\[/(h|H)4\\]"), "<h4>$2</h4>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)5\\](.+?)\\[/(h|H)5\\]"), "<h5>$2</h5>");
 		bbcodeMap.put(Pattern.compile("\\[(h|H)6\\](.+?)\\[/(h|H)6\\]"), "<h6>$2</h6>");
+		bbcodeMap.put(Pattern.compile("\\[(indent|INDENT)\\]"), "<span style='margin-left:8px;'></span>");
+		bbcodeMap.put(Pattern.compile("\\[(code|CODE)\\]"), "<pre>");
+		bbcodeMap.put(Pattern.compile("\\[/(code|CODE)\\]"), "</pre>");
 		bbcodeMap.put(Pattern.compile("\\[(quote|QUOTE)\\]"), "<blockquote>");
 		bbcodeMap.put(Pattern.compile("\\[/(quote|QUOTE)\\]"), "</blockquote>");
 		bbcodeMap.put(Pattern.compile("\\[(quote|QUOTE)=(.+?)\\]"), "<div class='quote'>$2</div><blockquote>");
-		bbcodeMap.put(Pattern.compile("\\[(center|CENTER)\\](.+?)\\[/(center|CENTER)\\]"), "<div align='center'>$2</div>");
+		bbcodeMap.put(Pattern.compile("\\[(center|CENTER)\\]"), "<div align='center'>");
+		bbcodeMap.put(Pattern.compile("\\[/(center|CENTER)\\]"), "</div>");
 		bbcodeMap.put(Pattern.compile("\\[(align|ALIGN)=(.+?)\\](.+?)\\[/(align|ALIGN)\\]"), "<div align='$2'>$3</div>");
 		bbcodeMap.put(Pattern.compile("\\[(color|COLOR)=(.+?)\\](.+?)\\[/(color|COLOR)\\]"), "<span style='color:$2;'>$3</span>");
 		bbcodeMap.put(Pattern.compile("\\[(size|SIZE)=(.+?)\\](.+?)\\[/(size|SIZE)\\]"), "<span style='font-size:$2;'>$3</span>");
 		bbcodeMap.put(Pattern.compile("\\[(img|IMG)\\](.+?)\\[/(img|IMG)\\]"), "<img src='$2' />");
 		bbcodeMap.put(Pattern.compile("\\[(url|URL)\\](.+?)\\[/(url|URL)\\]"), "<a href='$2'>$2</a>");
 		bbcodeMap.put(Pattern.compile("\\[(url|URL)=(.+?)\\](.+?)\\[/(url|URL)\\]"), "<a href='$2'>$3</a>");
+		bbcodeMap.put(Pattern.compile("\\[(font|FONT)=(.+?)\\]"), "<span style='font-family:$2'>");
+		bbcodeMap.put(Pattern.compile("\\[/(font|FONT)\\]"), "</span>");
 	}
 
 	private static String parseBBCode(String text) {
@@ -117,6 +131,6 @@ public class ThreadPage extends Template{
 
 	@Override
 	protected String generateBaseTemplate(String templateHtml) throws IOException, SQLException {
-		return super.generateBaseTemplate(templateHtml.replaceAll("%THREAD_NAME%", threadName)).replaceAll("%FORUM_NAME%", forumName);
+		return super.generateBaseTemplate(templateHtml.replaceAll("%THREAD_NAME%", quoteReplacement(threadName)).replaceAll("%FORUM_NAME%", quoteReplacement(forumName)));
 	}
 }

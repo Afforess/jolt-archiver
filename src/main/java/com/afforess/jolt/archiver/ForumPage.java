@@ -68,8 +68,10 @@ public class ForumPage extends Template{
 				
 				Date postTime = new Date(result.getLong(8) * 1000L);
 				String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
-				finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", quoteReplacement("<a href=\"../../threads/" + posts.getFormattedThreadName() + "/index.html\">" + result.getString(2) + "</a>")).replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
-											.replaceAll("%THREAD_OWNER%", quoteReplacement(result.getString(5))).replaceAll("%POSTED_DATE%", quoteReplacement(time))
+				finalHtml.append(templateHtml.replaceAll("%THREAD_TITLE%", quoteReplacement("<a href=\"../../threads/" + posts.getFormattedThreadName() + "/index.html\">" + result.getString(2) + "</a>"))
+											.replaceAll("%REPLY_COUNT%", String.valueOf(result.getInt(4)))
+											.replaceAll("%THREAD_OWNER%", quoteReplacement(result.getString(5)))
+											.replaceAll("%POSTED_DATE%", quoteReplacement(time))
 											.replaceAll("%LAST_REPLY_USER%", quoteReplacement(result.getString(7))));
 			}
 		} finally {
@@ -97,6 +99,6 @@ public class ForumPage extends Template{
 
 	@Override
 	protected String generateBaseTemplate(String templateHtml) throws IOException, SQLException {
-		return super.generateBaseTemplate(templateHtml.replaceAll("%FORUM_NAME%", forumName).replaceAll("%FORUM_DESCRIPTION%", forumDescription));
+		return super.generateBaseTemplate(templateHtml.replaceAll("%FORUM_NAME%", quoteReplacement(forumName)).replaceAll("%FORUM_DESCRIPTION%", quoteReplacement(forumDescription)));
 	}
 }
