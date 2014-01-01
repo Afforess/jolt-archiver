@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -30,7 +30,7 @@ public class ThreadPage extends Template{
 	}
 
 	public String getFormattedThreadName() {
-		return id + "_" + threadName.toLowerCase().replaceAll("\\&|\\(.*\\)|\\?|amp;|quot;|:|\\.|,|!|\\[|\\]", "").replaceAll(" +", "-");
+		return String.valueOf(id);
 	}
 
 	@Override
@@ -59,7 +59,9 @@ public class ThreadPage extends Template{
 				Date postTime = new Date(result.getLong(3) * 1000L);
 				String time = "<time datetime=\"" + HTML_DATETIME.format(postTime) + "\">" + DATE.format(postTime) + "</time>";
 				final String postContent = parseBBCode(result.getString(4));
-				finalHtml.append(templateHtml.replaceAll("%POST_USERNAME%", quoteReplacement(String.valueOf(result.getString(2)))).replaceAll("%POST_TIME%", quoteReplacement(time)).replaceAll("%POST_CONTENT%", quoteReplacement(postContent)));
+				finalHtml.append(templateHtml.replaceAll("%POST_USERNAME%", quoteReplacement(String.valueOf(result.getString(2))))
+											.replaceAll("%POST_TIME%", quoteReplacement(time)).replaceAll("%POST_CONTENT%", quoteReplacement(postContent))
+											.replaceAll("%POST_ID%", String.valueOf(result.getInt(1))));
 			}
 		} finally {
 			DbUtils.closeQuietly(result);
@@ -67,46 +69,98 @@ public class ThreadPage extends Template{
 		}
 	}
 
-	private static final Map<Pattern, String> bbcodeMap = new HashMap<Pattern, String>();
+	private static final Map<Pattern, String> bbcodeMap = new LinkedHashMap<Pattern, String>();
 	static {
-		bbcodeMap.put(Pattern.compile("\n\n"), "<br/>");
-		bbcodeMap.put(Pattern.compile("\\[(b|B)\\]"), "<strong>");
-		bbcodeMap.put(Pattern.compile("\\[/(b|B)\\]"), "</strong>");
-		bbcodeMap.put(Pattern.compile("\\[(i|I)\\]"), "<span class='italic'>");
-		bbcodeMap.put(Pattern.compile("\\[/(i|I)\\]"), "</span>");
-		bbcodeMap.put(Pattern.compile("\\[(u|U)\\]"), "<span class='underline'>");
-		bbcodeMap.put(Pattern.compile("\\[/(u|U)\\]"), "</span>");
-		bbcodeMap.put(Pattern.compile("\\[(list|LIST)\\]"), "<ul style=\"list-style-type: disc;\">");
-		bbcodeMap.put(Pattern.compile("\\[/(list|LIST)\\]"), "</ul>");
-		bbcodeMap.put(Pattern.compile("\\[(list|LIST)=[0-9]\\]"), "<ul style=\"list-style-type: decimal;\">");
-		bbcodeMap.put(Pattern.compile("\\[\\*\\]"), "</li><li>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)1\\](.+?)\\[/(h|H)1\\]"), "<h1>$2</h1>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)2\\](.+?)\\[/(h|H)2\\]"), "<h2>$2</h2>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)3\\](.+?)\\[/(h|H)3\\]"), "<h3>$2</h3>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)4\\](.+?)\\[/(h|H)4\\]"), "<h4>$2</h4>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)5\\](.+?)\\[/(h|H)5\\]"), "<h5>$2</h5>");
-		bbcodeMap.put(Pattern.compile("\\[(h|H)6\\](.+?)\\[/(h|H)6\\]"), "<h6>$2</h6>");
-		bbcodeMap.put(Pattern.compile("\\[(indent|INDENT)\\]"), "<span style='margin-left:8px;'></span>");
-		bbcodeMap.put(Pattern.compile("\\[(code|CODE)\\]"), "<pre>");
-		bbcodeMap.put(Pattern.compile("\\[/(code|CODE)\\]"), "</pre>");
-		bbcodeMap.put(Pattern.compile("\\[(quote|QUOTE)\\]"), "<blockquote>");
-		bbcodeMap.put(Pattern.compile("\\[/(quote|QUOTE)\\]"), "</blockquote>");
-		bbcodeMap.put(Pattern.compile("\\[(quote|QUOTE)=(.+?)\\]"), "<div class='quote'>$2</div><blockquote>");
-		bbcodeMap.put(Pattern.compile("\\[(center|CENTER)\\]"), "<div align='center'>");
-		bbcodeMap.put(Pattern.compile("\\[/(center|CENTER)\\]"), "</div>");
-		bbcodeMap.put(Pattern.compile("\\[(align|ALIGN)=(.+?)\\](.+?)\\[/(align|ALIGN)\\]"), "<div align='$2'>$3</div>");
-		bbcodeMap.put(Pattern.compile("\\[(color|COLOR)=(.+?)\\](.+?)\\[/(color|COLOR)\\]"), "<span style='color:$2;'>$3</span>");
-		bbcodeMap.put(Pattern.compile("\\[(size|SIZE)=(.+?)\\](.+?)\\[/(size|SIZE)\\]"), "<span style='font-size:$2;'>$3</span>");
-		bbcodeMap.put(Pattern.compile("\\[(img|IMG)\\](.+?)\\[/(img|IMG)\\]"), "<img src='$2' />");
-		bbcodeMap.put(Pattern.compile("\\[(url|URL)\\](.+?)\\[/(url|URL)\\]"), "<a href='$2'>$2</a>");
-		bbcodeMap.put(Pattern.compile("\\[(url|URL)=(.+?)\\](.+?)\\[/(url|URL)\\]"), "<a href='$2'>$3</a>");
-		bbcodeMap.put(Pattern.compile("\\[(font|FONT)=(.+?)\\]"), "<span style='font-family:$2'>");
-		bbcodeMap.put(Pattern.compile("\\[/(font|FONT)\\]"), "</span>");
+		bbcodeMap.put(Pattern.compile("http://forums.jolt.co.uk/showthread.php\\?t=([0-9]+)", Pattern.CASE_INSENSITIVE), "../$1/index.html");
+		
+		bbcodeMap.put(Pattern.compile("\n\n"), "<p>");
+		bbcodeMap.put(Pattern.compile("\\[b\\]", Pattern.CASE_INSENSITIVE), "<strong>");
+		bbcodeMap.put(Pattern.compile("\\[/b\\]", Pattern.CASE_INSENSITIVE), "</strong>");
+		bbcodeMap.put(Pattern.compile("\\[i\\]", Pattern.CASE_INSENSITIVE), "<span class='italic'>");
+		bbcodeMap.put(Pattern.compile("\\[/i\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[u\\]", Pattern.CASE_INSENSITIVE), "<span class='underline'>");
+		bbcodeMap.put(Pattern.compile("\\[/u\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[list\\]", Pattern.CASE_INSENSITIVE), "<ul style=\"list-style-type: disc;\">");
+		bbcodeMap.put(Pattern.compile("\\[/list\\]", Pattern.CASE_INSENSITIVE), "</ul>");
+		bbcodeMap.put(Pattern.compile("\\[list=[0-9]\\]", Pattern.CASE_INSENSITIVE), "<ul style=\"list-style-type: decimal;\">");
+		bbcodeMap.put(Pattern.compile("\\[\\*\\]", Pattern.CASE_INSENSITIVE), "</li><li>");
+		bbcodeMap.put(Pattern.compile("\\[h([0-6])\\]", Pattern.CASE_INSENSITIVE), "<h$1>");
+		bbcodeMap.put(Pattern.compile("\\[/h([0-6])\\]", Pattern.CASE_INSENSITIVE), "</h$1>");
+		bbcodeMap.put(Pattern.compile("\\[indent\\]", Pattern.CASE_INSENSITIVE), "<span style='padding-left:30px;'>");
+		bbcodeMap.put(Pattern.compile("\\[/indent\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[code\\]", Pattern.CASE_INSENSITIVE), "<pre>");
+		bbcodeMap.put(Pattern.compile("\\[/code\\]", Pattern.CASE_INSENSITIVE), "</pre>");
+		bbcodeMap.put(Pattern.compile("\\[quote\\]", Pattern.CASE_INSENSITIVE), "<blockquote>");
+		bbcodeMap.put(Pattern.compile("\\[/quote\\]", Pattern.CASE_INSENSITIVE), "</blockquote>");
+		bbcodeMap.put(Pattern.compile("\\[quote=(.+?);([0-9]+)\\]", Pattern.CASE_INSENSITIVE), "<div postid='$2' class='quote'>$1</div><blockquote>");
+		bbcodeMap.put(Pattern.compile("\\[quote=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<div class='quote'>$1</div><blockquote>");
+		bbcodeMap.put(Pattern.compile("\\[center\\]", Pattern.CASE_INSENSITIVE), "<div align='center'>");
+		bbcodeMap.put(Pattern.compile("\\[/center\\]", Pattern.CASE_INSENSITIVE), "</div>");
+		bbcodeMap.put(Pattern.compile("\\[align=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<div align='$1'>");
+		bbcodeMap.put(Pattern.compile("\\[/align\\]", Pattern.CASE_INSENSITIVE), "</div>");
+		bbcodeMap.put(Pattern.compile("\\[color=\"(.+?)\"\\]", Pattern.CASE_INSENSITIVE), "<span style='color:$1;'>");
+		bbcodeMap.put(Pattern.compile("\\[color=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<span style='color:$1;'>");
+		bbcodeMap.put(Pattern.compile("\\[/color\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[size=\"([1-7])\"\\]", Pattern.CASE_INSENSITIVE), "<span class='bbcode-size-$1'>");
+		bbcodeMap.put(Pattern.compile("\\[size=([1-7])\\]", Pattern.CASE_INSENSITIVE), "<span class='bbcode-size-$1'>");
+		bbcodeMap.put(Pattern.compile("\\[size=\"(.+?)\"\\]", Pattern.CASE_INSENSITIVE), "<span style='font-size:$1;'>");
+		bbcodeMap.put(Pattern.compile("\\[size=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<span style='font-size:$1;'>");
+		bbcodeMap.put(Pattern.compile("\\[/size\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[img\\](.+?)\\[/(img|IMG)\\]", Pattern.CASE_INSENSITIVE), "<img src='$1' />");
+		bbcodeMap.put(Pattern.compile("\\[url\\]", Pattern.CASE_INSENSITIVE), "<a href='$2'>$2</a>");
+		bbcodeMap.put(Pattern.compile("\\[url=\"(.+?)\"\\](.+?)\\[/(url|URL)\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
+		bbcodeMap.put(Pattern.compile("\\[url=(.+?)\\](.+?)\\[/(url|URL)\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
+		bbcodeMap.put(Pattern.compile("\\[font=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<span style='font-family:$1'>");
+		bbcodeMap.put(Pattern.compile("\\[/font\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[left\\]", Pattern.CASE_INSENSITIVE), "<span class=\"left-align\">");
+		bbcodeMap.put(Pattern.compile("\\[/left\\]", Pattern.CASE_INSENSITIVE), "</span>");
 	}
 
-	private static String parseBBCode(String text) {
+	private String parseBBCode(String text) throws SQLException {
 		for (Map.Entry<Pattern, String> entry : bbcodeMap.entrySet()) {
 			text = entry.getKey().matcher(text).replaceAll(entry.getValue());
+		}
+
+		//link post ids
+		int start = text.indexOf("<div postid='");
+		while(start > -1) {
+			int end = text.indexOf("'", start + "<div postid='".length());
+			try {
+				int postId = Integer.parseInt(text.substring(start + "<div postid='".length(), end));
+				Connection conn = getConnection();
+				PreparedStatement threadLookup = null;
+				PreparedStatement postCount = null;
+				ResultSet result = null;
+				ResultSet set = null;
+				try {
+					threadLookup = conn.prepareStatement("SELECT threadid FROM post WHERE postid = ?");
+					threadLookup.setInt(1, postId);
+					set = threadLookup.executeQuery();
+					if (set.next()) {
+						int threadId = set.getInt(1);
+						postCount = conn.prepareStatement("SELECT count(*) FROM post WHERE threadid = ? AND postid < ?");
+						postCount.setInt(1, threadId);
+						postCount.setInt(2, postId);
+						result = postCount.executeQuery();
+						if (result.next()) {
+							int count = result.getInt(1);
+							int tagEnd = text.indexOf(">", end);
+							int tagStart = text.indexOf("</div>", tagEnd + 1);
+							StringBuilder builder = new StringBuilder(text.substring(0, start));
+							builder.append("<div class='quote'><a href='../").append(threadId).append("/").append(count < ITEMS_PER_PAGE ? "index.html#" : "page-" + (count / ITEMS_PER_PAGE) + ".html#").append(postId).append("'>").append(text.substring(tagEnd, tagStart)).append("</a>").append(text.substring(tagStart));
+							text = builder.toString();
+						}  else break;
+					} else break;
+				} finally {
+					DbUtils.closeQuietly(set);
+					DbUtils.closeQuietly(result);
+					DbUtils.closeQuietly(postCount);
+					DbUtils.closeQuietly(threadLookup);
+				}
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			start = text.indexOf("<div postid='");
 		}
 
 		return text;

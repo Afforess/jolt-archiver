@@ -24,8 +24,8 @@
 			<ul class='pagination' id='pagination'>%PAGINATION%</ul>
 			<!--Template Start-->
 			<div class="row">
-				<div class="col-md-12">
-					<p style='font-size:11px;'><strong>%POST_USERNAME%</strong> (%POST_TIME%)</p>
+				<div id="%POST_ID%" class="col-md-12">
+					<p class='post-author'><strong>%POST_USERNAME%</strong> (%POST_TIME%)<span style='float:right;'><a href="#%POST_ID%">Post: %POST_ID%</a></span></p>
 					<p>%POST_CONTENT%</p>
 				</div>
 			</div>

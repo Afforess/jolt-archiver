@@ -36,7 +36,7 @@ public abstract class Template {
 		if (pages <= 1) {
 			return templateHtml.replaceAll("%PAGINATION%", "");
 		} else {
-			return templateHtml.replaceAll("%PAGINATION%", Matcher.quoteReplacement("<script type='text/javascript'>var options = {bootstrapMajorVersion: 3, currentPage: %CURRENT_PAGE%, totalPages: " + pages + ", shouldShowPage: function(type, page, current){ if (type == 'first' || type == 'last') return false; return true;}, pageUrl: function(type, page, current) { return (page == 1 ? \"index.html\" : \"page-\" + (page - 1) + \".html\"); }}; $('#pagination').bootstrapPaginator(options);</script>"));
+			return templateHtml.replaceAll("%PAGINATION%", Matcher.quoteReplacement("<script type='text/javascript'>var options = {bootstrapMajorVersion: 3, numberOfPages: " + Math.min(5, Math.max(15, pages)) + ", currentPage: %CURRENT_PAGE%, totalPages: " + pages + ", shouldShowPage: function(type, page, current){ if (type == 'first' || type == 'last') return false; return true;}, pageUrl: function(type, page, current) { return (page == 1 ? \"index.html\" : \"page-\" + (page - 1) + \".html\"); }}; $('#pagination').bootstrapPaginator(options);</script>"));
 		}
 	}
 
