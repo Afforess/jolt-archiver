@@ -106,14 +106,14 @@ public class ThreadPage extends Template{
 		bbcodeMap.put(Pattern.compile("\\[size=\"(.+?)\"\\]", Pattern.CASE_INSENSITIVE), "<span style='font-size:$1;'>");
 		bbcodeMap.put(Pattern.compile("\\[size=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<span style='font-size:$1;'>");
 		bbcodeMap.put(Pattern.compile("\\[/size\\]", Pattern.CASE_INSENSITIVE), "</span>");
-		bbcodeMap.put(Pattern.compile("\\[img\\](.+?)\\[/(img|IMG)\\]", Pattern.CASE_INSENSITIVE), "<img src='$1' />");
-		bbcodeMap.put(Pattern.compile("\\[url\\]", Pattern.CASE_INSENSITIVE), "<a href='$2'>$2</a>");
-		bbcodeMap.put(Pattern.compile("\\[url=\"(.+?)\"\\](.+?)\\[/(url|URL)\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
-		bbcodeMap.put(Pattern.compile("\\[url=(.+?)\\](.+?)\\[/(url|URL)\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
 		bbcodeMap.put(Pattern.compile("\\[font=(.+?)\\]", Pattern.CASE_INSENSITIVE), "<span style='font-family:$1'>");
 		bbcodeMap.put(Pattern.compile("\\[/font\\]", Pattern.CASE_INSENSITIVE), "</span>");
 		bbcodeMap.put(Pattern.compile("\\[left\\]", Pattern.CASE_INSENSITIVE), "<span class=\"left-align\">");
 		bbcodeMap.put(Pattern.compile("\\[/left\\]", Pattern.CASE_INSENSITIVE), "</span>");
+		bbcodeMap.put(Pattern.compile("\\[img\\](.+?)\\[/img\\]", Pattern.CASE_INSENSITIVE), "<img src='$1' />");
+		bbcodeMap.put(Pattern.compile("\\[url=\"(.+?)\"\\](.+?)\\[/url\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
+		bbcodeMap.put(Pattern.compile("\\[url=(.+?)\\](.+?)\\[/url\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$2</a>");
+		bbcodeMap.put(Pattern.compile("\\[url\\](.+?)\\[/url\\]", Pattern.CASE_INSENSITIVE), "<a href='$1'>$1</a>");
 	}
 
 	private String parseBBCode(String text) throws SQLException {
