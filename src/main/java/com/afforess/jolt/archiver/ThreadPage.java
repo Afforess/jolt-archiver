@@ -50,7 +50,7 @@ public class ThreadPage extends Template{
 		ResultSet result = null;
 		PreparedStatement forums = null;
 		try {
-			forums = conn.prepareStatement("SELECT postid, username, dateline, pagetext FROM post WHERE threadid = ? ORDER BY dateline DESC LIMIT ?, ?");
+			forums = conn.prepareStatement("SELECT postid, username, dateline, pagetext FROM post WHERE threadid = ? ORDER BY dateline ASC LIMIT ?, ?");
 			forums.setInt(1, id);
 			forums.setInt(2, page * ITEMS_PER_PAGE);
 			forums.setInt(3, ITEMS_PER_PAGE);
@@ -73,7 +73,9 @@ public class ThreadPage extends Template{
 	static {
 		bbcodeMap.put(Pattern.compile("http://forums.jolt.co.uk/showthread.php\\?t=([0-9]+)", Pattern.CASE_INSENSITIVE), "../$1/index.html");
 		
-		bbcodeMap.put(Pattern.compile("\n\n"), "<p>");
+		bbcodeMap.put(Pattern.compile("\n"), "<br>");
+//      bbcodeMap.put(Pattern.compile("\r\n"), "<p>");
+
 		bbcodeMap.put(Pattern.compile("\\[b\\]", Pattern.CASE_INSENSITIVE), "<strong>");
 		bbcodeMap.put(Pattern.compile("\\[/b\\]", Pattern.CASE_INSENSITIVE), "</strong>");
 		bbcodeMap.put(Pattern.compile("\\[i\\]", Pattern.CASE_INSENSITIVE), "<span class='italic'>");

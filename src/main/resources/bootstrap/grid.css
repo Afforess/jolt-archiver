@@ -134,3 +134,6 @@ hr {
 .bbcode-size-5 { font-size: 200%; }
 .bbcode-size-6 { font-size: 250%; }
 .bbcode-size-7 { font-size: 300%; }
+
+.jolt-header { background: url(http://www.nationstates.net/images/joltnslogo.gif) no-repeat #ADAEAD; }
+.jolt-header div { text-align:right; }

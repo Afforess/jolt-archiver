@@ -17,6 +17,13 @@
 	</head>
 	<body>
 		<div class="container">
+
+			<div class="jolt-header">
+				<div>
+					<img src="http://www.nationstates.net/images/joltarchive.png" alt="">
+				</div>
+			</div>
+
 			<div class="page-header">
 				<h1>%THREAD_NAME%</h1>
 				<p class="breadcrumb-banner"><span class="breadcrumb-parent"><a class="breadcrumb" href="../../index.html"><span class="breadcrumb-text">Home</span></a><span class="arrow"><span></span></span></span>%FORUM_NAME%</p>
@@ -25,7 +32,7 @@
 			<!--Template Start-->
 			<div class="row">
 				<div id="%POST_ID%" class="col-md-12">
-					<p class='post-author'><strong>%POST_USERNAME%</strong> (%POST_TIME%)<span style='float:right;'><a href="#%POST_ID%">Post: %POST_ID%</a></span></p>
+					<p class='post-author'><strong>%POST_USERNAME%</strong> %POST_TIME%<span style='float:right;'><a href="#%POST_ID%">Post: %POST_ID%</a></span></p>
 					<p>%POST_CONTENT%</p>
 				</div>
 			</div>
