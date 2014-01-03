@@ -50,7 +50,7 @@ public class ThreadPage extends Template{
 		ResultSet result = null;
 		PreparedStatement forums = null;
 		try {
-			forums = conn.prepareStatement("SELECT postid, username, dateline, pagetext FROM post WHERE threadid = ? ORDER BY dateline ASC LIMIT ?, ?");
+			forums = conn.prepareStatement("SELECT postid, username, dateline, pagetext FROM post WHERE visible = 1 AND threadid = ? ORDER BY dateline ASC LIMIT ?, ?");
 			forums.setInt(1, id);
 			forums.setInt(2, page * ITEMS_PER_PAGE);
 			forums.setInt(3, ITEMS_PER_PAGE);

@@ -52,7 +52,7 @@ public class ForumPage extends Template{
 		ResultSet result = null;
 		PreparedStatement forums = null;
 		try {
-			forums = conn.prepareStatement("SELECT threadid, title, lastpost, replycount, postusername, postuserid, lastposter, dateline FROM thread WHERE forumid = ? ORDER BY dateline DESC LIMIT ?, ?");
+			forums = conn.prepareStatement("SELECT threadid, title, lastpost, replycount, postusername, postuserid, lastposter, dateline FROM thread WHERE visible = 1 AND forumid = ? ORDER BY dateline DESC LIMIT ?, ?");
 			forums.setInt(1, id);
 			forums.setInt(2, page * ITEMS_PER_PAGE);
 			forums.setInt(3, ITEMS_PER_PAGE);
