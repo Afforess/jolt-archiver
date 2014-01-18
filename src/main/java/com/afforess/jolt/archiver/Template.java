@@ -65,9 +65,9 @@ public abstract class Template {
 					output.getParentFile().mkdirs();
 					generatePageTemplate(templateHtml, builder, i);
 	
-					builder.append(html.substring(templateEnd + TEMPLATE_END.length()).replaceAll("%CURRENT_PAGE%", String.valueOf(i + 1)));
+					builder.append(html.substring(templateEnd + TEMPLATE_END.length()));
 					fos = new FileOutputStream(output);
-					IOUtils.write(builder, fos);
+					IOUtils.write(builder.toString().replaceAll("%CURRENT_PAGE%", String.valueOf(i + 1)), fos);
 				} finally {
 					IOUtils.closeQuietly(fos);
 				}
